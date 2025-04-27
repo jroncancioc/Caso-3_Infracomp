@@ -86,4 +86,11 @@ public class CryptoUtils {
     public static SecretKey bytesToHMACKey(byte[] keyBytes) {
         return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
+
+    public static byte[] generarBytesAleatorios(int numBytes) throws Exception {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[numBytes];
+        random.nextBytes(bytes);
+        return bytes;
+    }
 }

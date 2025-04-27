@@ -14,8 +14,8 @@ public class ServidorPrincipal {
     public static void main(String[] args) {
         try {
             // Cargar llaves del servidor
-            privateKey = cargarLlavePrivada("src/keys/servidor_private.key");
-            publicKey = cargarLlavePublica("src/keys/servidor_public.key");
+            privateKey = cargarLlavePrivada("C:\\Users\\juans\\Desktop\\Juan David El Goat\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_private.key");
+            publicKey = cargarLlavePublica("C:\\Users\\juans\\Desktop\\Juan David El Goat\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_public.key");
 
             ServerSocket serverSocket = new ServerSocket(PUERTO);
             System.out.println("Servidor principal escuchando en el puerto " + PUERTO);
@@ -81,7 +81,7 @@ public class ServidorPrincipal {
         in.readFully(retoCifrado);
 
         // Descifrar reto
-        byte[] retoDescifrado = CryptoUtils.descifrarRSA(retoCifrado, privateKey);
+        byte[] retoDescifrado = CryptoUtils.decryptRSA(retoCifrado, privateKey);
 
         boolean esValido = java.util.Arrays.equals(retoOriginal, retoDescifrado);
 
