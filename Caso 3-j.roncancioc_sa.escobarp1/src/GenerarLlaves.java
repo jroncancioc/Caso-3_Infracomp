@@ -1,6 +1,7 @@
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -10,28 +11,31 @@ public class GenerarLlaves {
 
     public static void main(String[] args) {
         try {
-            String rutaLlaves = "C:\\Users\\juand\\OneDrive\\Desktop\\UNIANDES\\2025-10\\INFRACOMP\\Casos\\Caso 3\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\";
+            // Guardar las llaves en carpeta "keys" dentro del proyecto
+            String rutaLlaves = "keys/";
 
+            // Crear la carpeta si no existe
             File directorio = new File(rutaLlaves);
             if (!directorio.exists()) {
                 directorio.mkdirs();
             }
 
+            // Generar el par de llaves RSA
             KeyPairGenerator generador = KeyPairGenerator.getInstance("RSA");
             generador.initialize(1024);
             KeyPair parLlaves = generador.generateKeyPair();
             PrivateKey privateKey = parLlaves.getPrivate();
             PublicKey publicKey = parLlaves.getPublic();
 
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(rutaLlaves + "servidor_private.key"))) {
-                oos.writeObject(privateKey);
-            }
+            // Guardar la llave privada (PKCS#8)
+            Path pathPrivada = Paths.get(rutaLlaves, "servidor_private.key");
+            Files.write(pathPrivada, privateKey.getEncoded());
 
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(rutaLlaves + "servidor_public.key"))) {
-                oos.writeObject(publicKey);
-            }
+            // Guardar la llave pública (X.509)
+            Path pathPublica = Paths.get(rutaLlaves, "servidor_public.key");
+            Files.write(pathPublica, publicKey.getEncoded());
 
-            System.out.println("¡Llaves generadas exitosamente en la carpeta keys!");
+            System.out.println("¡Llaves generadas exitosamente en la carpeta 'keys'!");
 
         } catch (Exception e) {
             e.printStackTrace();

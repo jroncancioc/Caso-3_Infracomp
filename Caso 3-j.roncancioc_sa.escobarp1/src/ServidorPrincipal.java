@@ -13,9 +13,9 @@ public class ServidorPrincipal {
 
     public static void main(String[] args) {
         try {
-            // Cargar llaves del servidor
-            privateKey = cargarLlavePrivada("C:\\Users\\juans\\Desktop\\Juan David El Goat\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_private.key");
-            publicKey = cargarLlavePublica("C:\\Users\\juans\\Desktop\\Juan David El Goat\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_public.key");
+            // Cargar llaves del servidor (RUTAS RELATIVAS)
+            privateKey = cargarLlavePrivada("keys/servidor_private.key");
+            publicKey = cargarLlavePublica("keys/servidor_public.key");
 
             ServerSocket serverSocket = new ServerSocket(PUERTO);
             System.out.println("Servidor principal escuchando en el puerto " + PUERTO);
@@ -24,8 +24,14 @@ public class ServidorPrincipal {
                 Socket socket = serverSocket.accept();
                 System.out.println("\nServidor: Cliente conectado desde " + socket.getInetAddress());
 
-                // Manejar conexión en hilo separado si quieres (por ahora en main)
-                manejarCliente(socket);
+                try {
+                    // Manejar conexión con el cliente
+                    manejarCliente(socket);
+                } catch (Exception e) {
+                    System.out.println("Error al manejar cliente: " + e.getMessage());
+                } finally {
+                    socket.close();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +43,6 @@ public class ServidorPrincipal {
         byte[] reto = procesarHello(socket);
 
         if (reto == null) {
-            socket.close();
             return;
         }
 
@@ -45,7 +50,7 @@ public class ServidorPrincipal {
         boolean exito = verificarReto(socket, reto);
 
         if (!exito) {
-            socket.close();
+            System.out.println("Servidor: Cerrando conexión por fallo en verificación.");
         }
     }
 
@@ -55,20 +60,19 @@ public class ServidorPrincipal {
 
         String mensaje = in.readUTF();
         if (!"HELLO".equals(mensaje)) {
-            System.out.println("Mensaje inesperado: " + mensaje);
-            socket.close();
+            System.out.println("Servidor: Mensaje inesperado: " + mensaje);
             return null;
         }
 
         // Crear reto aleatorio
-        byte[] reto = CryptoUtils.generarBytesAleatorios(32); // 32 bytes = 256 bits
+        byte[] reto = CryptoUtils.generateRandomBytes(32); // 32 bytes = 256 bits
 
-        // Enviar el reto
+        // Enviar el reto al cliente
         out.writeInt(reto.length);
         out.write(reto);
         out.flush();
 
-        System.out.println("Servidor: Reto enviado.");
+        System.out.println("Servidor: Reto enviado al cliente.");
         return reto;
     }
 
@@ -80,7 +84,7 @@ public class ServidorPrincipal {
         byte[] retoCifrado = new byte[longitud];
         in.readFully(retoCifrado);
 
-        // Descifrar reto
+        // Descifrar reto usando llave privada
         byte[] retoDescifrado = CryptoUtils.decryptRSA(retoCifrado, privateKey);
 
         boolean esValido = java.util.Arrays.equals(retoOriginal, retoDescifrado);
@@ -90,21 +94,21 @@ public class ServidorPrincipal {
             System.out.println("Servidor: Reto verificado exitosamente.");
         } else {
             out.writeUTF("ERROR");
-            System.out.println("Servidor: Error en verificación de reto.");
+            System.out.println("Servidor: Error en la verificación del reto.");
         }
         out.flush();
         return esValido;
     }
 
-    private static PrivateKey cargarLlavePrivada(String ruta) throws Exception {
-        byte[] bytes = Files.readAllBytes(Paths.get(ruta));
+    private static PrivateKey cargarLlavePrivada(String rutaRelativa) throws Exception {
+        byte[] bytes = Files.readAllBytes(Paths.get(rutaRelativa));
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(bytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePrivate(spec);
     }
 
-    private static PublicKey cargarLlavePublica(String ruta) throws Exception {
-        byte[] bytes = Files.readAllBytes(Paths.get(ruta));
+    private static PublicKey cargarLlavePublica(String rutaRelativa) throws Exception {
+        byte[] bytes = Files.readAllBytes(Paths.get(rutaRelativa));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(bytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePublic(spec);
