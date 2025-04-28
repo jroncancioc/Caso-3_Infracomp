@@ -67,7 +67,7 @@ public class ServidorPrincipal {
 
                 System.out.println("ServidorPrincipal: Llaves de sesión derivadas exitosamente.");
 
-                new Thread(new DelegadoServidor(socket, aesKey, hmacKey, tablaServicios)).start(); // ⚡ ahora pasa la tabla
+                new Thread(new DelegadoServidor(socket, aesKey, hmacKey, tablaServicios, servidorPrivateKey)).start(); // ⚡ ahora pasa la tabla
             }
 
         } catch (Exception e) {

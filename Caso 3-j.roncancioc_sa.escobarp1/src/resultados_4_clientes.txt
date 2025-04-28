@@ -1,0 +1,44 @@
+ClienteConcurrente: Lanzando 4 clientes...
+Cliente #1: Conectado al servidor.
+Cliente #3: Conectado al servidor.
+Cliente #2: Conectado al servidor.
+Cliente #4: Conectado al servidor.
+
+Cliente #4: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #3: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #3: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #3: Consulta finalizada exitosamente.
+
+Cliente #4: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #4: Consulta finalizada exitosamente.
+
+
+Cliente #1: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #1: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #1: Consulta finalizada exitosamente.
+
+
+Cliente #2: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #2: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #2: Consulta finalizada exitosamente.
+
+
+ClienteConcurrente: Todas las consultas terminadas.
+ClienteConcurrente: Tiempo total (ms): 605

@@ -1,8 +1,9 @@
 import java.io.*;
 import java.net.Socket;
-import javax.crypto.*;
+import java.security.*;
 import java.util.Map;
-import java.util.Arrays;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 
 public class DelegadoServidor implements Runnable {
 
@@ -10,12 +11,14 @@ public class DelegadoServidor implements Runnable {
     private final SecretKey aesKey;
     private final SecretKey hmacKey;
     private final Map<Integer, Servicio> tablaServicios;
+    private final PrivateKey servidorPrivateKey;
 
-    public DelegadoServidor(Socket socket, SecretKey aesKey, SecretKey hmacKey, Map<Integer, Servicio> tablaServicios) {
+    public DelegadoServidor(Socket socket, SecretKey aesKey, SecretKey hmacKey, Map<Integer, Servicio> tablaServicios, PrivateKey servidorPrivateKey) {
         this.socket = socket;
         this.aesKey = aesKey;
         this.hmacKey = hmacKey;
         this.tablaServicios = tablaServicios;
+        this.servidorPrivateKey = servidorPrivateKey;
     }
 
     @Override
@@ -29,10 +32,10 @@ public class DelegadoServidor implements Runnable {
 
             System.out.println("DelegadoServidor: Iniciado para " + socket.getInetAddress());
 
-            // 1️⃣ Enviar la tabla de servicios
+            // 1️⃣ Enviar tabla de servicios
             enviarTablaServicios(out);
 
-            // 2️⃣ Recibir la selección del cliente (servicio ID)
+            // 2️⃣ Recibir selección del cliente
             int servicioID = recibirSeleccionCliente(in);
 
             // 3️⃣ Buscar IP y puerto
@@ -47,11 +50,8 @@ public class DelegadoServidor implements Runnable {
 
             System.out.println("DelegadoServidor: Cliente solicitó servicio " + servicioID + " -> Respuesta: " + respuesta);
 
-            // 4️⃣ Enviar la respuesta (IP:PUERTO) al cliente
+            // 4️⃣ Enviar la respuesta
             enviarRespuesta(out, respuesta);
-
-            // 5️⃣ Aquí puedes continuar con comunicación normal si quieres
-            // Pero en esta fase ya la tarea principal se cumplió
 
         } catch (IOException e) {
             System.out.println("DelegadoServidor: Cliente desconectado inesperadamente.");
@@ -77,6 +77,18 @@ public class DelegadoServidor implements Runnable {
         String tabla = builder.toString();
         System.out.println("DelegadoServidor: Enviando tabla de servicios...");
 
+        // 1. FIRMAR tabla
+        long inicioFirma = System.nanoTime();
+        Signature firma = Signature.getInstance("SHA256withRSA");
+        firma.initSign(servidorPrivateKey);
+        firma.update(tabla.getBytes("UTF-8"));
+        byte[] firmaTabla = firma.sign();
+        long finFirma = System.nanoTime();
+        long tiempoFirmaMs = (finFirma - inicioFirma) / 1_000_000;
+        System.out.println("Tiempo de firma de tabla (ms): " + tiempoFirmaMs);
+
+        // 2. CIFRAR tabla
+        long inicioCifrado = System.nanoTime();
         byte[] iv = CryptoUtils.generateRandomIV();
         byte[] tablaCifrada = CryptoUtils.encryptAES(tabla.getBytes("UTF-8"), aesKey, iv);
 
@@ -86,18 +98,31 @@ public class DelegadoServidor implements Runnable {
         byte[] ivAndCipherText = baos.toByteArray();
 
         byte[] hmac = CryptoUtils.generateHMAC(ivAndCipherText, hmacKey);
+        long finCifrado = System.nanoTime();
+        long tiempoCifradoMs = (finCifrado - inicioCifrado) / 1_000_000;
+        System.out.println("Tiempo de cifrado de tabla (ms): " + tiempoCifradoMs);
 
+        // 3. Enviar datos al cliente
+        // Primero tabla cifrada
         out.writeInt(iv.length);
         out.write(iv);
         out.writeInt(tablaCifrada.length);
         out.write(tablaCifrada);
         out.writeInt(hmac.length);
         out.write(hmac);
+
+        // Luego firma
+        out.writeInt(firmaTabla.length);
+        out.write(firmaTabla);
+
         out.flush();
-        System.out.println("DelegadoServidor: Tabla enviada correctamente.");
+        System.out.println("DelegadoServidor: Tabla y firma enviadas correctamente.");
     }
 
     private int recibirSeleccionCliente(DataInputStream in) throws Exception {
+        // 4. VERIFICAR selección
+        long inicioVerificacion = System.nanoTime();
+
         int ivLength = in.readInt();
         byte[] iv = new byte[ivLength];
         in.readFully(iv);
@@ -121,6 +146,10 @@ public class DelegadoServidor implements Runnable {
 
         byte[] mensajeDescifrado = CryptoUtils.decryptAES(mensajeCifrado, aesKey, iv);
         String servicioIDStr = new String(mensajeDescifrado, "UTF-8");
+
+        long finVerificacion = System.nanoTime();
+        long tiempoVerificacionMs = (finVerificacion - inicioVerificacion) / 1_000_000;
+        System.out.println("Tiempo de verificación de consulta (ms): " + tiempoVerificacionMs);
 
         return Integer.parseInt(servicioIDStr.trim());
     }

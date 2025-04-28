@@ -1,0 +1,324 @@
+ClienteConcurrente: Lanzando 32 clientes...
+Cliente #19: Conectado al servidor.
+Cliente #29: Conectado al servidor.
+Cliente #18: Conectado al servidor.
+Cliente #8: Conectado al servidor.
+Cliente #2: Conectado al servidor.
+Cliente #13: Conectado al servidor.
+Cliente #16: Conectado al servidor.
+Cliente #4: Conectado al servidor.
+Cliente #11: Conectado al servidor.
+Cliente #1: Conectado al servidor.
+Cliente #12: Conectado al servidor.
+Cliente #20: Conectado al servidor.
+Cliente #23: Conectado al servidor.
+Cliente #28: Conectado al servidor.
+Cliente #6: Conectado al servidor.
+Cliente #9: Conectado al servidor.
+Cliente #10: Conectado al servidor.
+Cliente #15: Conectado al servidor.
+Cliente #25: Conectado al servidor.
+Cliente #3: Conectado al servidor.
+Cliente #26: Conectado al servidor.
+Cliente #5: Conectado al servidor.
+Cliente #24: Conectado al servidor.
+Cliente #30: Conectado al servidor.
+Cliente #31: Conectado al servidor.
+Cliente #32: Conectado al servidor.
+Cliente #17: Conectado al servidor.
+Cliente #22: Conectado al servidor.
+Cliente #14: Conectado al servidor.
+Cliente #27: Conectado al servidor.
+Cliente #21: Conectado al servidor.
+Cliente #7: Conectado al servidor.
+
+Cliente #19: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #18: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #29: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #2: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #19: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #19: Consulta finalizada exitosamente.
+
+Cliente #2: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #2: Consulta finalizada exitosamente.
+
+Cliente #18: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #18: Consulta finalizada exitosamente.
+
+
+Cliente #8: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #8: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #8: Consulta finalizada exitosamente.
+
+Cliente #29: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #29: Consulta finalizada exitosamente.
+
+
+Cliente #13: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #16: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #16: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #16: Consulta finalizada exitosamente.
+
+Cliente #13: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #13: Consulta finalizada exitosamente.
+
+
+Cliente #11: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #1: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #4: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #1: IP y Puerto del servicio seleccionado: 127.0.0.1:20002
+Cliente #1: Consulta finalizada exitosamente.
+
+Cliente #11: IP y Puerto del servicio seleccionado: 127.0.0.1:20002
+Cliente #11: Consulta finalizada exitosamente.
+
+Cliente #4: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #4: Consulta finalizada exitosamente.
+
+
+Cliente #20: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #12: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #12: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #12: Consulta finalizada exitosamente.
+
+Cliente #20: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #20: Consulta finalizada exitosamente.
+
+
+Cliente #9: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #15: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #15: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #15: Consulta finalizada exitosamente.
+
+
+Cliente #6: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #9: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #9: Consulta finalizada exitosamente.
+
+
+Cliente #23: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #28: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #28: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #28: Consulta finalizada exitosamente.
+
+Cliente #6: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #6: Consulta finalizada exitosamente.
+
+
+Cliente #25: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #25: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #25: Consulta finalizada exitosamente.
+
+
+Cliente #10: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #23: IP y Puerto del servicio seleccionado: 127.0.0.1:20002
+Cliente #23: Consulta finalizada exitosamente.
+
+Cliente #10: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #10: Consulta finalizada exitosamente.
+
+
+Cliente #24: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #24: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #24: Consulta finalizada exitosamente.
+
+
+Cliente #3: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #26: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #5: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #31: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #3: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #3: Consulta finalizada exitosamente.
+
+
+Cliente #32: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #22: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #30: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #31: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #31: Consulta finalizada exitosamente.
+
+Cliente #32: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #32: Consulta finalizada exitosamente.
+
+Cliente #22: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #22: Consulta finalizada exitosamente.
+
+Cliente #26: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #26: Consulta finalizada exitosamente.
+
+Cliente #5: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #5: Consulta finalizada exitosamente.
+
+Cliente #30: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #30: Consulta finalizada exitosamente.
+
+
+Cliente #14: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #14: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #14: Consulta finalizada exitosamente.
+
+
+Cliente #27: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #21: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+
+Cliente #7: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #7: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #7: Consulta finalizada exitosamente.
+
+
+Cliente #17: Servicios disponibles:
+1) Consulta Estado Vuelo
+2) Disponibilidad de Vuelos
+3) Costo del Vuelo
+
+Cliente #27: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #27: Consulta finalizada exitosamente.
+
+Cliente #17: IP y Puerto del servicio seleccionado: 127.0.0.1:20003
+Cliente #17: Consulta finalizada exitosamente.
+
+Cliente #21: IP y Puerto del servicio seleccionado: 127.0.0.1:20001
+Cliente #21: Consulta finalizada exitosamente.
+
+
+ClienteConcurrente: Todas las consultas terminadas.
+ClienteConcurrente: Tiempo total (ms): 2024
