@@ -26,7 +26,12 @@ public class DelegadoCliente {
         try {
             autenticarServidor();
             intercambiarLlavesDH();
-            comunicar();
+            recibirTablaServicios();
+            seleccionarServicio();
+            recibirRespuesta(); // IP:PUERTO
+            socket.close(); // ⚡️ Cerrar conexión limpia aquí
+            System.out.println("Cliente> Conexión terminada tras recibir IP:Puerto.");
+            // No llamar a comunicar()!
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,7 +81,6 @@ public class DelegadoCliente {
         }
 
         DHParameterSpec dhSpec = new DHParameterSpec(p, g);
-
         var clienteKeyPair = CryptoUtils.generateDHKeyPair(dhSpec);
 
         int serverPubKeyLength = in.readInt();
@@ -100,6 +104,110 @@ public class DelegadoCliente {
         System.out.println("DelegadoCliente: Llaves de sesión derivadas exitosamente.");
     }
 
+    private void recibirTablaServicios() throws Exception {
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+
+        int ivLength = in.readInt();
+        byte[] iv = new byte[ivLength];
+        in.readFully(iv);
+
+        int tablaLength = in.readInt();
+        byte[] tablaCifrada = new byte[tablaLength];
+        in.readFully(tablaCifrada);
+
+        int hmacLength = in.readInt();
+        byte[] hmacRecibido = new byte[hmacLength];
+        in.readFully(hmacRecibido);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(iv);
+        baos.write(tablaCifrada);
+        byte[] ivAndCipherText = baos.toByteArray();
+
+        if (!CryptoUtils.verifyHMAC(ivAndCipherText, hmacRecibido, hmacKey)) {
+            throw new SecurityException("DelegadoCliente: Error de integridad en la tabla de servicios (HMAC no válido).");
+        }
+
+        byte[] tablaBytes = CryptoUtils.decryptAES(tablaCifrada, aesKey, iv);
+        String tablaServicios = new String(tablaBytes, "UTF-8");
+
+        System.out.println("\n*** Servicios disponibles ***");
+        System.out.println(tablaServicios);
+    }
+
+    private void seleccionarServicio() throws Exception {
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\nCliente> Escribe el número de servicio que deseas seleccionar: ");
+        String seleccion = teclado.readLine();
+
+        int servicioID;
+        try {
+            servicioID = Integer.parseInt(seleccion.trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Cliente> Selección inválida. Se seleccionará aleatoriamente.");
+            servicioID = (int) (Math.random() * 3) + 1;
+        }
+
+        System.out.println("Cliente> Servicio seleccionado: " + servicioID);
+
+        String mensaje = String.valueOf(servicioID);
+
+        byte[] iv = CryptoUtils.generateRandomIV();
+        byte[] mensajeCifrado = CryptoUtils.encryptAES(mensaje.getBytes("UTF-8"), aesKey, iv);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(iv);
+        baos.write(mensajeCifrado);
+        byte[] ivAndCipherText = baos.toByteArray();
+
+        byte[] hmac = CryptoUtils.generateHMAC(ivAndCipherText, hmacKey);
+
+        out.writeInt(iv.length);
+        out.write(iv);
+
+        out.writeInt(mensajeCifrado.length);
+        out.write(mensajeCifrado);
+
+        out.writeInt(hmac.length);
+        out.write(hmac);
+
+        out.flush();
+
+        System.out.println("Cliente> Identificador de servicio enviado al servidor.");
+    }
+
+    private void recibirRespuesta() throws Exception {
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+
+        int ivLength = in.readInt();
+        byte[] iv = new byte[ivLength];
+        in.readFully(iv);
+
+        int msgLength = in.readInt();
+        byte[] respuestaCifrada = new byte[msgLength];
+        in.readFully(respuestaCifrada);
+
+        int hmacLength = in.readInt();
+        byte[] hmacRecibido = new byte[hmacLength];
+        in.readFully(hmacRecibido);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(iv);
+        baos.write(respuestaCifrada);
+        byte[] ivAndCipherText = baos.toByteArray();
+
+        if (!CryptoUtils.verifyHMAC(ivAndCipherText, hmacRecibido, hmacKey)) {
+            throw new SecurityException("DelegadoCliente: Error de autenticación en la respuesta del servidor (HMAC no válido).");
+        }
+
+        byte[] respuestaDescifrada = CryptoUtils.decryptAES(respuestaCifrada, aesKey, iv);
+        String respuesta = new String(respuestaDescifrada, "UTF-8");
+
+        System.out.println("\nServidor> IP y Puerto del servicio seleccionado: " + respuesta);
+    }
+
     private void comunicar() throws Exception {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
         DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -116,16 +224,9 @@ public class DelegadoCliente {
                 break;
             }
 
-            byte[] mensajeBytes = mensaje.getBytes("UTF-8");
             byte[] ivBytes = CryptoUtils.generateRandomIV();
-            byte[] mensajeCifrado = CryptoUtils.encryptAES(mensajeBytes, aesKey, ivBytes);
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(ivBytes);
-            baos.write(mensajeCifrado);
-            byte[] ivAndCipherText = baos.toByteArray();
-
-            byte[] hmac = CryptoUtils.generateHMAC(ivAndCipherText, hmacKey);
+            byte[] mensajeCifrado = CryptoUtils.encryptAES(mensaje.getBytes(), aesKey, ivBytes);
+            byte[] hmac = CryptoUtils.generateHMAC(mensajeCifrado, hmacKey);
 
             out.writeInt(ivBytes.length);
             out.write(ivBytes);
@@ -136,7 +237,7 @@ public class DelegadoCliente {
             out.flush();
 
             byte[] respuesta = recibirMensaje();
-            System.out.println("Servidor> " + new String(respuesta, "UTF-8"));
+            System.out.println("Servidor> " + new String(respuesta));
         }
     }
 
@@ -155,12 +256,7 @@ public class DelegadoCliente {
         byte[] hmacRecibido = new byte[hmacLength];
         in.readFully(hmacRecibido);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(ivBytes);
-        baos.write(mensajeCifrado);
-        byte[] ivAndCipherText = baos.toByteArray();
-
-        if (!CryptoUtils.verifyHMAC(ivAndCipherText, hmacRecibido, hmacKey)) {
+        if (!CryptoUtils.verifyHMAC(mensajeCifrado, hmacRecibido, hmacKey)) {
             throw new SecurityException("DelegadoCliente: Error de autenticación en el mensaje recibido (HMAC no válido).");
         }
 
