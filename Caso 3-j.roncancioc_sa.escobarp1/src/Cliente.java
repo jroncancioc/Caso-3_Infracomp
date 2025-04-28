@@ -1,92 +1,41 @@
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
 import java.security.*;
 import java.security.spec.*;
 import java.nio.file.*;
+import java.math.BigInteger;
 
 public class Cliente {
 
-    private static final String SERVIDOR_IP = "localhost"; // o IP del servidor
+    private static final String SERVIDOR_IP = "localhost";
     private static final int PUERTO = 12345;
     private static PublicKey servidorPublicKey;
 
+    private static final BigInteger P = new BigInteger(
+        "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E08" +
+        "8A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD" +
+        "3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E" +
+        "7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899F" +
+        "A5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF", 16);
+    private static final BigInteger G = BigInteger.valueOf(2);
+
     public static void main(String[] args) {
-        Socket socket = null;
-
         try {
-            // Cargar la llave pública del servidor (RUTA RELATIVA)
-            servidorPublicKey = cargarLlavePublica("keys/servidor_public.key");
+            servidorPublicKey = cargarLlavePublica("C:\\Users\\LILIANA CAMACHO\\Desktop\\Uniandes\\Infracomp\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_public.key");
 
-            socket = new Socket(SERVIDOR_IP, PUERTO);
+            Socket socket = new Socket(SERVIDOR_IP, PUERTO);
             System.out.println("Cliente: Conectado al servidor.");
 
-            // Paso 1: Enviar HELLO
-            enviarHello(socket);
-
-            // Paso 3: Procesar el reto
-            procesarReto(socket);
-
-            // Paso 6: Recibir confirmación
-            boolean exito = recibirConfirmacion(socket);
-
-            if (exito) {
-                System.out.println("Cliente: Autenticación exitosa. Continuar protocolo...");
-                // Aquí seguiríamos con Diffie-Hellman (u otros pasos)
-            } else {
-                System.out.println("Cliente: Error de autenticación.");
-            }
+            DelegadoCliente delegado = new DelegadoCliente(socket, servidorPublicKey, P, G);
+            delegado.iniciar();
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                    System.out.println("Cliente: Conexión cerrada.");
-                } catch (IOException e) {
-                    System.out.println("Cliente: Error al cerrar conexión.");
-                }
-            }
         }
     }
 
-    private static void enviarHello(Socket socket) throws Exception {
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        out.writeUTF("HELLO");
-        out.flush();
-        System.out.println("Cliente: Enviado HELLO.");
-    }
-
-    private static void procesarReto(Socket socket) throws Exception {
-        DataInputStream in = new DataInputStream(socket.getInputStream());
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
-        int longitud = in.readInt();
-        byte[] reto = new byte[longitud];
-        in.readFully(reto);
-
-        // Cifrar el reto
-        byte[] retoCifrado = CryptoUtils.encryptRSA(reto, servidorPublicKey);
-
-        // Enviar reto cifrado
-        out.writeInt(retoCifrado.length);
-        out.write(retoCifrado);
-        out.flush();
-
-        System.out.println("Cliente: Reto cifrado enviado al servidor.");
-    }
-
-    private static boolean recibirConfirmacion(Socket socket) throws Exception {
-        DataInputStream in = new DataInputStream(socket.getInputStream());
-
-        String respuesta = in.readUTF();
-        System.out.println("Cliente: Respuesta del servidor: " + respuesta);
-
-        return "OK".equals(respuesta);
-    }
-
-    private static PublicKey cargarLlavePublica(String rutaRelativa) throws Exception {
-        byte[] bytes = Files.readAllBytes(Paths.get(rutaRelativa));
+    private static PublicKey cargarLlavePublica(String ruta) throws Exception {
+        byte[] bytes = Files.readAllBytes(Paths.get(ruta));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(bytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePublic(spec);
