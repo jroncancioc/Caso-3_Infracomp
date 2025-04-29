@@ -29,14 +29,14 @@ public class ClienteIterativo {
             for (int i = 1; i <= 32; i++) {
                 System.out.println("\nConsulta #" + i);
 
-                int servicioSeleccionado = random.nextInt(3) + 1; // 1, 2 o 3 aleatorio
+                int servicioSeleccionado = random.nextInt(3) + 1; 
 
                 try (Socket socket = new Socket(SERVIDOR_IP, PUERTO)) {
                     DelegadoClienteIterativo delegado = new DelegadoClienteIterativo(socket, servidorPublicKey, P, G);
                     delegado.iniciarUnaConsulta(servicioSeleccionado);
                 }
 
-                Thread.sleep(100); // Pequeña pausa entre consultas
+                Thread.sleep(100); 
             }
 
             System.out.println("\nClienteIterativo: Terminó las 32 consultas exitosamente.");

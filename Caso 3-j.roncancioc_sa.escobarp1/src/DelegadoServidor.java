@@ -63,7 +63,6 @@ public class DelegadoServidor implements Runnable {
         String tabla = builder.toString();
         System.out.println("DelegadoServidor: Enviando tabla de servicios...");
 
-        // --- Medir firma ---
         long inicioFirma = System.nanoTime();
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(servidorPrivateKey);
@@ -72,14 +71,12 @@ public class DelegadoServidor implements Runnable {
         long finFirma = System.nanoTime();
         System.out.println("Tiempo de firma de tabla (ms): " + (finFirma - inicioFirma) / 1_000_000);
 
-        // --- Medir cifrado ---
         long inicioCifrado = System.nanoTime();
         byte[] iv = CryptoUtils.generateRandomIV();
         byte[] tablaCifrada = CryptoUtils.encryptAES(tabla.getBytes("UTF-8"), aesKey, iv);
         long finCifrado = System.nanoTime();
         System.out.println("Tiempo de cifrado de tabla (ms): " + (finCifrado - inicioCifrado) / 1_000_000);
 
-        // Generar HMAC
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(iv);
         baos.write(tablaCifrada);
@@ -87,7 +84,6 @@ public class DelegadoServidor implements Runnable {
 
         byte[] hmac = CryptoUtils.generateHMAC(ivAndCipherText, hmacKey);
 
-        // Enviar datos
         out.writeInt(iv.length);
         out.write(iv);
         out.writeInt(tablaCifrada.length);
@@ -103,7 +99,6 @@ public class DelegadoServidor implements Runnable {
     }
 
     private int recibirSeleccionCliente(DataInputStream in) throws Exception {
-        // --- Medir verificación ---
         long inicioVerificacion = System.nanoTime();
 
         int ivLength = in.readInt();

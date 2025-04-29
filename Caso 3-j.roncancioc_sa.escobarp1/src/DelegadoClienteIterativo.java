@@ -37,7 +37,6 @@ public class DelegadoClienteIterativo {
             try {
                 socket.close();
             } catch (IOException e) {
-                // Ignorar
             }
         }
     }
