@@ -28,8 +28,8 @@ public class ServidorPrincipal {
 
     public static void main(String[] args) {
         try {
-            servidorPrivateKey = cargarLlavePrivada("C:\\Users\\LILIANA CAMACHO\\Desktop\\Uniandes\\Infracomp\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_private.key");
-            servidorPublicKey = cargarLlavePublica("C:\\Users\\LILIANA CAMACHO\\Desktop\\Uniandes\\Infracomp\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_public.key");
+            servidorPrivateKey = cargarLlavePrivada("keys/servidor_private.key");
+            servidorPublicKey = cargarLlavePublica("keys/servidor_public.key");
 
             inicializarTablaServicios();
 
