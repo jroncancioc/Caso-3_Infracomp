@@ -5,15 +5,14 @@ import java.security.spec.*;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 import java.math.BigInteger;
-import java.util.Random;
 
 public class ClienteIterativo {
 
-    private static final String SERVIDOR_IP = "localhost"; // o IP del servidor
+    private static final String SERVIDOR_IP = "localhost";
     private static final int PUERTO = 12345;
     private static PublicKey servidorPublicKey;
 
-    // Parámetros DH estándar (RFC 3526, 1024-bit MODP Group)
+    // Parámetros DH estándar
     private static final BigInteger P = new BigInteger(
         "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E08" +
         "8A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD" +
@@ -24,16 +23,21 @@ public class ClienteIterativo {
 
     public static void main(String[] args) {
         try {
-            servidorPublicKey = cargarLlavePublica("src/keys/servidor_public.key");
+            servidorPublicKey = cargarLlavePublica("keys/servidor_public.key");
 
-            Socket socket = new Socket(SERVIDOR_IP, PUERTO);
-            System.out.println("ClienteIterativo: Conectado al servidor.");
+            for (int i = 1; i <= 32; i++) {
+                System.out.println("\nConsulta #" + i);
+                try (Socket socket = new Socket(SERVIDOR_IP, PUERTO)) {
+                    DelegadoClienteIterativo delegado = new DelegadoClienteIterativo(socket, servidorPublicKey, P, G);
+                    delegado.iniciarUnaConsulta();
+                }
+                Thread.sleep(100); // Pequeña pausa opcional entre consultas
+            }
 
-            DelegadoClienteIterativo delegado = new DelegadoClienteIterativo(socket, servidorPublicKey, P, G);
-
-            delegado.iniciar();
+            System.out.println("\nClienteIterativo: Terminó las 32 consultas exitosamente.");
 
         } catch (Exception e) {
+            System.err.println("ClienteIterativo: Error general - " + e.getMessage());
             e.printStackTrace();
         }
     }

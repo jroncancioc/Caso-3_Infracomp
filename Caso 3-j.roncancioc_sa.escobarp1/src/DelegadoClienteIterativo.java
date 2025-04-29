@@ -5,7 +5,6 @@ import java.security.spec.*;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 import java.math.BigInteger;
-import java.util.Random;
 
 public class DelegadoClienteIterativo {
 
@@ -15,7 +14,6 @@ public class DelegadoClienteIterativo {
     private SecretKey hmacKey;
     private final BigInteger p;
     private final BigInteger g;
-    private final Random random = new Random();
 
     public DelegadoClienteIterativo(Socket socket, PublicKey servidorPublicKey, BigInteger p, BigInteger g) {
         this.socket = socket;
@@ -24,29 +22,24 @@ public class DelegadoClienteIterativo {
         this.g = g;
     }
 
-    public void iniciar() {
+    public void iniciarUnaConsulta() {
         try {
             autenticarServidor();
             intercambiarLlavesDH();
             recibirTablaServicios();
-
-            for (int i = 1; i <= 32; i++) {
-                System.out.println("\nConsulta #" + i);
-
-                int servicioSeleccionado = random.nextInt(3) + 1; // aleatorio entre 1 y 3
-                enviarSolicitud(servicioSeleccionado);
-
-                String respuesta = recibirRespuesta();
-                System.out.println("Servidor> " + respuesta);
-
-                Thread.sleep(100); // Pausa entre consultas
-            }
-
-            socket.close();
-            System.out.println("ClienteIterativo: Conexión cerrada después de 32 consultas.");
+            enviarSolicitud(); // Selección automática de servicio aleatorio
+            String respuesta = recibirRespuesta();
+            System.out.println("Servidor> " + respuesta);
 
         } catch (Exception e) {
+            System.err.println("DelegadoClienteIterativo: Error en la consulta - " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                // Ignorar errores al cerrar el socket
+            }
         }
     }
 
@@ -137,7 +130,7 @@ public class DelegadoClienteIterativo {
         baos.write(tablaCifrada);
 
         if (!CryptoUtils.verifyHMAC(baos.toByteArray(), hmac, hmacKey)) {
-            throw new SecurityException("DelegadoClienteIterativo: HMAC inválido en tabla.");
+            throw new SecurityException("DelegadoClienteIterativo: HMAC inválido en tabla de servicios.");
         }
 
         byte[] tablaBytes = CryptoUtils.decryptAES(tablaCifrada, aesKey, iv);
@@ -145,9 +138,10 @@ public class DelegadoClienteIterativo {
         System.out.println("\n*** Servicios disponibles ***\n" + tabla);
     }
 
-    private void enviarSolicitud(int servicioSeleccionado) throws Exception {
+    private void enviarSolicitud() throws Exception {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
+        int servicioSeleccionado = (int) (Math.random() * 3) + 1; // Número aleatorio 1-3
         byte[] servicioBytes = String.valueOf(servicioSeleccionado).getBytes("UTF-8");
 
         byte[] iv = CryptoUtils.generateRandomIV();
