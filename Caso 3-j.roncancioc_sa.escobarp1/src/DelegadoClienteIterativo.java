@@ -22,15 +22,14 @@ public class DelegadoClienteIterativo {
         this.g = g;
     }
 
-    public void iniciarUnaConsulta() {
+    public void iniciarUnaConsulta(int servicioSeleccionado) {
         try {
             autenticarServidor();
             intercambiarLlavesDH();
             recibirTablaServicios();
-            enviarSolicitud(); 
+            enviarSolicitud(servicioSeleccionado);
             String respuesta = recibirRespuesta();
             System.out.println("Servidor> " + respuesta);
-
         } catch (Exception e) {
             System.err.println("DelegadoClienteIterativo: Error en la consulta - " + e.getMessage());
             e.printStackTrace();
@@ -38,6 +37,7 @@ public class DelegadoClienteIterativo {
             try {
                 socket.close();
             } catch (IOException e) {
+                // Ignorar
             }
         }
     }
@@ -124,6 +124,10 @@ public class DelegadoClienteIterativo {
         byte[] hmac = new byte[hmacLength];
         in.readFully(hmac);
 
+        int firmaLength = in.readInt();
+        byte[] firmaTabla = new byte[firmaLength];
+        in.readFully(firmaTabla);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(iv);
         baos.write(tablaCifrada);
@@ -134,13 +138,20 @@ public class DelegadoClienteIterativo {
 
         byte[] tablaBytes = CryptoUtils.decryptAES(tablaCifrada, aesKey, iv);
         String tabla = new String(tablaBytes, "UTF-8");
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initVerify(servidorPublicKey);
+        signature.update(tabla.getBytes("UTF-8"));
+        if (!signature.verify(firmaTabla)) {
+            throw new SecurityException("DelegadoClienteIterativo: Firma inválida en tabla de servicios.");
+        }
+
         System.out.println("\n*** Servicios disponibles ***\n" + tabla);
     }
 
-    private void enviarSolicitud() throws Exception {
+    private void enviarSolicitud(int servicioSeleccionado) throws Exception {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-        int servicioSeleccionado = (int) (Math.random() * 3) + 1;
         byte[] servicioBytes = String.valueOf(servicioSeleccionado).getBytes("UTF-8");
 
         byte[] iv = CryptoUtils.generateRandomIV();
