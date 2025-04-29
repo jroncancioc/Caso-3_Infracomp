@@ -21,7 +21,7 @@ public class Cliente {
 
     public static void main(String[] args) {
         try {
-            servidorPublicKey = cargarLlavePublica("C:\\Users\\LILIANA CAMACHO\\Desktop\\Uniandes\\Infracomp\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_public.key");
+            servidorPublicKey = cargarLlavePublica("keys/servidor_public.key");
 
             Socket socket = new Socket(SERVIDOR_IP, PUERTO);
             System.out.println("Cliente: Conectado al servidor.");
