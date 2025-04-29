@@ -12,7 +12,6 @@ public class ClienteIndividual implements Runnable {
     private static final String SERVIDOR_IP = "localhost";
     private static final int PUERTO = 12345;
 
-    // Parámetros DH estándar
     private static final BigInteger P = new BigInteger(
         "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E08" +
         "8A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD" +
@@ -150,7 +149,7 @@ public class ClienteIndividual implements Runnable {
     }
 
     private void seleccionarServicio(DataOutputStream out, DataInputStream in, SecretKey aesKey, SecretKey hmacKey) throws Exception {
-        int idServicio = (int) (Math.random() * 3) + 1; // Selección aleatoria entre 1 y 3
+        int idServicio = (int) (Math.random() * 3) + 1;
         String servicioStr = String.valueOf(idServicio);
 
         byte[] iv = CryptoUtils.generateRandomIV();
@@ -171,7 +170,6 @@ public class ClienteIndividual implements Runnable {
         out.write(hmac);
         out.flush();
 
-        // Recibir respuesta
         int ivRespLength = in.readInt();
         byte[] ivResp = new byte[ivRespLength];
         in.readFully(ivResp);
@@ -200,7 +198,7 @@ public class ClienteIndividual implements Runnable {
     }
 
     private static PublicKey cargarLlavePublica() throws Exception {
-        String ruta = new File("keys/servidor_public.key").getAbsolutePath();  // ⚡ agrega src/
+        String ruta = new File("keys/servidor_public.key").getAbsolutePath();
         byte[] bytes = java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(ruta));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(bytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");

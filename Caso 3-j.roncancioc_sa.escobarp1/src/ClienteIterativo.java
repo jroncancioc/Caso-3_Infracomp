@@ -12,7 +12,6 @@ public class ClienteIterativo {
     private static final int PUERTO = 12345;
     private static PublicKey servidorPublicKey;
 
-    // Parámetros DH estándar
     private static final BigInteger P = new BigInteger(
         "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E08" +
         "8A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD" +
@@ -31,7 +30,7 @@ public class ClienteIterativo {
                     DelegadoClienteIterativo delegado = new DelegadoClienteIterativo(socket, servidorPublicKey, P, G);
                     delegado.iniciarUnaConsulta();
                 }
-                Thread.sleep(100); // Pequeña pausa opcional entre consultas
+                Thread.sleep(100);
             }
 
             System.out.println("\nClienteIterativo: Terminó las 32 consultas exitosamente.");

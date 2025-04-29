@@ -5,8 +5,7 @@ public class ClienteConcurrente {
 
     public static void main(String[] args) {
         try {
-            // ⚡ Leer el número de clientes desde variable de entorno o usar 4 como default
-            int numClientes = 64; // Este nùmero lo varìo dependiendo de la prueba que se quiera hacer (4, 16, 32, 64)
+            int numClientes = 4; // Este nùmero lo varìo dependiendo de la prueba que se quiera hacer (4, 16, 32, 64)
             String envClientes = System.getenv("NUM_CLIENTES");
             if (envClientes != null) {
                 numClientes = Integer.parseInt(envClientes);

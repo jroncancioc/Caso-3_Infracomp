@@ -103,27 +103,22 @@ public class DelegadoCliente {
     private void recibirTablaServicios() throws Exception {
         DataInputStream in = new DataInputStream(socket.getInputStream());
 
-        // Recibir IV
         int ivLength = in.readInt();
         byte[] iv = new byte[ivLength];
         in.readFully(iv);
 
-        // Recibir tabla cifrada
         int tablaLength = in.readInt();
         byte[] tablaCifrada = new byte[tablaLength];
         in.readFully(tablaCifrada);
 
-        // Recibir HMAC
         int hmacLength = in.readInt();
         byte[] hmacRecibido = new byte[hmacLength];
         in.readFully(hmacRecibido);
 
-        // Recibir firma
         int firmaLength = in.readInt();
         byte[] firma = new byte[firmaLength];
         in.readFully(firma);
 
-        // Verificar HMAC
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(iv);
         baos.write(tablaCifrada);
@@ -133,11 +128,9 @@ public class DelegadoCliente {
             throw new SecurityException("DelegadoCliente: Error de integridad en la tabla de servicios (HMAC no válido).");
         }
 
-        // Descifrar la tabla
         byte[] tablaBytes = CryptoUtils.decryptAES(tablaCifrada, aesKey, iv);
         String tablaServicios = new String(tablaBytes, "UTF-8");
 
-        // Verificar firma digital
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initVerify(servidorPublicKey);
         signature.update(tablaBytes);
@@ -159,7 +152,6 @@ public class DelegadoCliente {
         System.out.print("Cliente> Escribe el número de servicio que deseas seleccionar: ");
         String servicio = teclado.readLine().trim();
 
-        // Enviar servicio seleccionado
         byte[] ivBytes = CryptoUtils.generateRandomIV();
         byte[] servicioCifrado = CryptoUtils.encryptAES(servicio.getBytes("UTF-8"), aesKey, ivBytes);
         byte[] hmac = CryptoUtils.generateHMAC(concatenar(ivBytes, servicioCifrado), hmacKey);
@@ -175,7 +167,6 @@ public class DelegadoCliente {
         System.out.println("Cliente> Servicio seleccionado: " + servicio);
         System.out.println("Cliente> Identificador de servicio enviado al servidor.");
 
-        // Recibir respuesta (IP:PUERTO)
         byte[] respuesta = recibirMensaje();
         System.out.println("\nServidor> IP y Puerto del servicio seleccionado: " + new String(respuesta, "UTF-8"));
 

@@ -16,10 +16,8 @@ public class ServidorPrincipal {
     private static PrivateKey servidorPrivateKey;
     private static PublicKey servidorPublicKey;
 
-    // Tabla de servicios
     private static final Map<Integer, Servicio> tablaServicios = new HashMap<>();
 
-    // Parámetros DH estándar (RFC 3526, 1024-bit MODP Group)
     private static final BigInteger P = new BigInteger(
         "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E08" +
         "8A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD" +
@@ -33,7 +31,7 @@ public class ServidorPrincipal {
             servidorPrivateKey = cargarLlavePrivada("C:\\Users\\LILIANA CAMACHO\\Desktop\\Uniandes\\Infracomp\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_private.key");
             servidorPublicKey = cargarLlavePublica("C:\\Users\\LILIANA CAMACHO\\Desktop\\Uniandes\\Infracomp\\Caso-3_Infracomp\\Caso 3-j.roncancioc_sa.escobarp1\\src\\keys\\servidor_public.key");
 
-            inicializarTablaServicios(); // ⚡ nuevo
+            inicializarTablaServicios();
 
             ServerSocket serverSocket = new ServerSocket(PUERTO);
             System.out.println("ServidorPrincipal: Escuchando en el puerto " + PUERTO);
@@ -48,7 +46,6 @@ public class ServidorPrincipal {
                 }
                 System.out.println("ServidorPrincipal: Cliente autenticado.");
 
-                // DH parameters (usar estándar)
                 DHParameterSpec dhSpec = new DHParameterSpec(P, G);
 
                 enviarParametrosDH(socket, dhSpec);
@@ -67,7 +64,7 @@ public class ServidorPrincipal {
 
                 System.out.println("ServidorPrincipal: Llaves de sesión derivadas exitosamente.");
 
-                new Thread(new DelegadoServidor(socket, aesKey, hmacKey, tablaServicios, servidorPrivateKey)).start(); // ⚡ ahora pasa la tabla
+                new Thread(new DelegadoServidor(socket, aesKey, hmacKey, tablaServicios, servidorPrivateKey)).start(); 
             }
 
         } catch (Exception e) {

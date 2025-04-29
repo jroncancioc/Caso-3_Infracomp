@@ -56,10 +56,10 @@ public class CryptoUtils {
     }
 
     public static byte[] computeSharedSecret(PrivateKey privateKey, PublicKey publicKey) throws Exception {
-        KeyAgreement keyAgree = KeyAgreement.getInstance("DiffieHellman"); // ⚡ Cambio aquí
+        KeyAgreement keyAgree = KeyAgreement.getInstance("DiffieHellman"); 
         keyAgree.init(privateKey);
         keyAgree.doPhase(publicKey, true);
-        return keyAgree.generateSecret(); // Obtenemos el byte[] crudo
+        return keyAgree.generateSecret(); 
     }
 
     public static DHParameterSpec generateDHParams() throws Exception {

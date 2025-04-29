@@ -27,7 +27,7 @@ public class DelegadoClienteIterativo {
             autenticarServidor();
             intercambiarLlavesDH();
             recibirTablaServicios();
-            enviarSolicitud(); // Selección automática de servicio aleatorio
+            enviarSolicitud(); 
             String respuesta = recibirRespuesta();
             System.out.println("Servidor> " + respuesta);
 
@@ -38,7 +38,6 @@ public class DelegadoClienteIterativo {
             try {
                 socket.close();
             } catch (IOException e) {
-                // Ignorar errores al cerrar el socket
             }
         }
     }
@@ -141,7 +140,7 @@ public class DelegadoClienteIterativo {
     private void enviarSolicitud() throws Exception {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-        int servicioSeleccionado = (int) (Math.random() * 3) + 1; // Número aleatorio 1-3
+        int servicioSeleccionado = (int) (Math.random() * 3) + 1;
         byte[] servicioBytes = String.valueOf(servicioSeleccionado).getBytes("UTF-8");
 
         byte[] iv = CryptoUtils.generateRandomIV();

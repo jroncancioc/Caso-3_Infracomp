@@ -32,25 +32,21 @@ public class DelegadoServidor implements Runnable {
 
             System.out.println("DelegadoServidor: Iniciado para " + socket.getInetAddress());
 
-            // 1️⃣ Enviar tabla de servicios
             enviarTablaServicios(out);
 
-            // 2️⃣ Recibir selección del cliente
             int servicioID = recibirSeleccionCliente(in);
 
-            // 3️⃣ Buscar IP y puerto
             Servicio servicio = tablaServicios.getOrDefault(servicioID, null);
 
             String respuesta;
             if (servicio != null) {
                 respuesta = servicio.getIp() + ":" + servicio.getPuerto();
             } else {
-                respuesta = "-1:-1"; // Servicio inválido
+                respuesta = "-1:-1"; 
             }
 
             System.out.println("DelegadoServidor: Cliente solicitó servicio " + servicioID + " -> Respuesta: " + respuesta);
 
-            // 4️⃣ Enviar la respuesta
             enviarRespuesta(out, respuesta);
 
         } catch (IOException e) {
@@ -77,7 +73,6 @@ public class DelegadoServidor implements Runnable {
         String tabla = builder.toString();
         System.out.println("DelegadoServidor: Enviando tabla de servicios...");
 
-        // 1. FIRMAR tabla
         long inicioFirma = System.nanoTime();
         Signature firma = Signature.getInstance("SHA256withRSA");
         firma.initSign(servidorPrivateKey);
@@ -87,7 +82,6 @@ public class DelegadoServidor implements Runnable {
         long tiempoFirmaMs = (finFirma - inicioFirma) / 1_000_000;
         System.out.println("Tiempo de firma de tabla (ms): " + tiempoFirmaMs);
 
-        // 2. CIFRAR tabla
         long inicioCifrado = System.nanoTime();
         byte[] iv = CryptoUtils.generateRandomIV();
         byte[] tablaCifrada = CryptoUtils.encryptAES(tabla.getBytes("UTF-8"), aesKey, iv);
@@ -102,8 +96,6 @@ public class DelegadoServidor implements Runnable {
         long tiempoCifradoMs = (finCifrado - inicioCifrado) / 1_000_000;
         System.out.println("Tiempo de cifrado de tabla (ms): " + tiempoCifradoMs);
 
-        // 3. Enviar datos al cliente
-        // Primero tabla cifrada
         out.writeInt(iv.length);
         out.write(iv);
         out.writeInt(tablaCifrada.length);
@@ -111,7 +103,6 @@ public class DelegadoServidor implements Runnable {
         out.writeInt(hmac.length);
         out.write(hmac);
 
-        // Luego firma
         out.writeInt(firmaTabla.length);
         out.write(firmaTabla);
 
@@ -120,7 +111,6 @@ public class DelegadoServidor implements Runnable {
     }
 
     private int recibirSeleccionCliente(DataInputStream in) throws Exception {
-        // 4. VERIFICAR selección
         long inicioVerificacion = System.nanoTime();
 
         int ivLength = in.readInt();
